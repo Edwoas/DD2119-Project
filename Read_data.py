@@ -41,29 +41,41 @@ def delay(sound, fs, echo=0.07, amp=0.2, rep=7):
 
 directory = 'tidigits/train/man/nw'
 data = []
-
-
+babble, _ = loadAudio("sorl2.wav")
 
 # Hämtar en lista över alla filnamn i directory, loopar igenom den och skapar kopior med rev / noise
 for filename in os.listdir(directory):
 
     gender = directory.split("/")[-2]       # Extraherar man/woman från path
-    speaker = directory[-2:]                # Extraherar speaker-koden som består av två bokstäver 
-    
+    speaker = directory[-2:]                # Extraherar speaker-koden (två bokstäver) från path 
     f = os.path.join(directory, filename)   # Skapar lokal path till varje fil, t.ex. tidigits/train/man/nw/9a.wav
-
 
     if os.path.isfile(f):
         sample, samplerate = loadAudio(f)
-       
         utter = filename.strip(".wav")      # Tar fram filnamn utan filformat, t.ex. 98z1.wav --> 98z1
-
         rev_samp = delay(sample, samplerate)
         noise_samp = sample + np.random.normal(0, 30, len(sample))
+        bab_samp = sample + babble[:len(sample)]
+        
+        '''
+        # En enkel plot över de fyra versionerna av ljudfilen
+        fig, axs = plt.subplots(4)
+        fig.subplots_adjust(hspace=2)
+        axs[0].plot(sample) 
+        axs[0].set_title("normal")
+        axs[1].plot(rev_samp)
+        axs[1].set_title("reverb")
+        axs[2].plot(noise_samp)
+        axs[2].set_title("noise")
+        axs[3].plot(bab_samp)
+        axs[3].set_title("babble")
+        plt.show()
+        break
+        '''
 
-        # Skapar lista med originalljud, reverbat ljud och ljud med noise
+        # Skapar lista med originalljud, reverbat ljud, ljud med noise och ljud med babbel
         data += [[sample, samplerate, "{} {} normal {}".format(gender, speaker, utter)], 
                 [rev_samp, samplerate, "{} {} reverb {}".format(gender, speaker, utter)],
-                [noise_samp, samplerate, "{} {} noise {}".format(gender, speaker, utter)]]
-
+                [noise_samp, samplerate, "{} {} noise {}".format(gender, speaker, utter)],
+                [bab_samp, smplrate, "{} {} babble {}".format(gender, speaker, utter)]]
 
