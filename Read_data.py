@@ -1,8 +1,11 @@
 import numpy as np
+
 from lab3_tools import *
+'''
 from lab1 import *
 from lab2 import *
 from prondict_ import *
+'''
 from IPython.display import Audio
 import scipy.io.wavfile as wavfile
 import os
@@ -36,7 +39,7 @@ def delay(sound, fs, echo=0.07, amp=0.2, rep=7):
 #lmfcc = concatenate([samples], True, False)
 
 
-directory = 'tidigits/disc_4.1.1/tidigits/train/man/nw'
+directory = 'tidigits/train/man/nw'
 data = []
 
 for filename in os.listdir(directory):  # Stegar igenom mapp med data och skapar kopior på filer fast med rev / noise på
@@ -44,10 +47,14 @@ for filename in os.listdir(directory):  # Stegar igenom mapp med data och skapar
     f = os.path.join(directory, filename)
 
     if os.path.isfile(f):
-        sample, smplrate = loadAudio(f)
+        sample, samplerate = loadAudio(f)
+       
         utter = filename.strip(".wav")
-        rev_samp = delay(sample, smplrate)
+        rev_samp = delay(sample, samplerate)
         noise_samp = sample + np.random.normal(0, 30, len(sample))
-        data += [[sample, smplrate, "{} {}".format(spkr, utter)], [rev_samp, smplrate, "{} rev {}".format(spkr, utter)],
-                 [noise_samp, smplrate, "{} noise {}".format(spkr, utter)]]
+        data += [[sample, samplerate, "{} {}".format(spkr, utter)], 
+                [rev_samp, samplerate, "{} rev {}".format(spkr, utter)],
+                [noise_samp, samplerate, "{} noise {}".format(spkr, utter)]]
 
+
+#print(data)

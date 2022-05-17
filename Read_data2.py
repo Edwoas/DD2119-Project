@@ -1,8 +1,10 @@
 import numpy as np
+'''
 from lab3_tools import *
 from lab1 import *
 from lab2 import *
 from prondict_ import *
+'''
 from IPython.display import Audio
 import scipy.io.wavfile as wavfile
 import os
