@@ -1,5 +1,5 @@
 import numpy as np
-
+import matplotlib.pyplot as plt
 from lab3_tools import *
 '''
 from lab1 import *
@@ -42,19 +42,28 @@ def delay(sound, fs, echo=0.07, amp=0.2, rep=7):
 directory = 'tidigits/train/man/nw'
 data = []
 
-for filename in os.listdir(directory):  # Stegar igenom mapp med data och skapar kopior på filer fast med rev / noise på
-    spkr = directory.split("/")[-2]
-    f = os.path.join(directory, filename)
+
+
+# Hämtar en lista över alla filnamn i directory, loopar igenom den och skapar kopior med rev / noise
+for filename in os.listdir(directory):
+
+    gender = directory.split("/")[-2]       # Extraherar man/woman från path
+    speaker = directory[-2:]                # Extraherar speaker-koden som består av två bokstäver 
+    
+    f = os.path.join(directory, filename)   # Skapar lokal path till varje fil, t.ex. tidigits/train/man/nw/9a.wav
+
 
     if os.path.isfile(f):
         sample, samplerate = loadAudio(f)
        
-        utter = filename.strip(".wav")
+        utter = filename.strip(".wav")      # Tar fram filnamn utan filformat, t.ex. 98z1.wav --> 98z1
+
         rev_samp = delay(sample, samplerate)
         noise_samp = sample + np.random.normal(0, 30, len(sample))
-        data += [[sample, samplerate, "{} {}".format(spkr, utter)], 
-                [rev_samp, samplerate, "{} rev {}".format(spkr, utter)],
-                [noise_samp, samplerate, "{} noise {}".format(spkr, utter)]]
+
+        # Skapar lista med originalljud, reverbat ljud och ljud med noise
+        data += [[sample, samplerate, "{} {} normal {}".format(gender, speaker, utter)], 
+                [rev_samp, samplerate, "{} {} reverb {}".format(gender, speaker, utter)],
+                [noise_samp, samplerate, "{} {} noise {}".format(gender, speaker, utter)]]
 
 
-#print(data)
