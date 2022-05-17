@@ -1,5 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
+import librosa
 from lab3_tools import *
 '''
 from lab1 import *
@@ -7,10 +8,27 @@ from lab2 import *
 from prondict_ import *
 '''
 from IPython.display import Audio
+import soundfile as sf
 import scipy.io.wavfile as wavfile
 import os
 
 # Bibliotek för att köra kod är lab3_tools, os och numpy
+
+# Från lab3_tools
+def loadAudio(filename):
+    """
+    loadAudio: loads audio data from file using pysndfile
+
+    Note that, by default soundfile converts the samples into floating point
+    numbers and rescales them in the range [-1, 1]. This is avoided by specifying
+    the option dtype=np.int16 which keeps both the original data type and range
+    of values.
+    """
+
+    # float32 used for librosa's lmfcc method, originally int16
+    samples, sampleRate = sf.read(filename, dtype='float32')
+
+    return samples, sampleRate
 
 def delay(sound, fs, echo=0.07, amp=0.2, rep=7):
     #sound = sound.astype(np.float) / 2**15
@@ -27,8 +45,6 @@ def delay(sound, fs, echo=0.07, amp=0.2, rep=7):
         amp /= 2
 
     return delayed_sig
-
-
 
 
 #phoneHMMs = np.load('lab2_models_all.npz', allow_pickle=True)['phoneHMMs'].item()
@@ -49,9 +65,10 @@ for filename in os.listdir(directory):
     gender = directory.split("/")[-2]       # Extraherar man/woman från path
     speaker = directory[-2:]                # Extraherar speaker-koden (två bokstäver) från path 
     f = os.path.join(directory, filename)   # Skapar lokal path till varje fil, t.ex. tidigits/train/man/nw/9a.wav
-
+  
     if os.path.isfile(f):
-        sample, samplerate = loadAudio(f)
+        sample, samplerate = loadAudio(f)    # Float32 since LMFCC requires floats
+
         utter = filename.strip(".wav")      # Tar fram filnamn utan filformat, t.ex. 98z1.wav --> 98z1
         rev_samp = delay(sample, samplerate)
         noise_samp = sample + np.random.normal(0, 30, len(sample))
@@ -73,9 +90,17 @@ for filename in os.listdir(directory):
         break
         '''
 
+        # - - - - - - - EJ FÄRDIG KOD - - - - - - - 
+        # Documentation: https://librosa.org/doc/latest/generated/librosa.feature.mfcc.html
+        mfcc = librosa.feature.mfcc(y=sample, sr=samplerate, n_mfcc=13, lifter=0)
+        plt.pcolormesh(mfcc)
+        plt.show()
+        break
+
         # Skapar lista med originalljud, reverbat ljud, ljud med noise och ljud med babbel
         data += [[sample, samplerate, "{} {} normal {}".format(gender, speaker, utter)], 
                 [rev_samp, samplerate, "{} {} reverb {}".format(gender, speaker, utter)],
                 [noise_samp, samplerate, "{} {} noise {}".format(gender, speaker, utter)],
-                [bab_samp, smplrate, "{} {} babble {}".format(gender, speaker, utter)]]
+                [bab_samp, samplerate, "{} {} babble {}".format(gender, speaker, utter)]]
 
+#print(data)
