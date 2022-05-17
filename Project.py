@@ -9,7 +9,7 @@ import os
 
 # Bibliotek för att köra kod är lab3_tools, os och numpy
 
-def delay(sound, fs, echo=0.1, amp=0.2, rep=7):
+def delay(sound, fs, echo=0.07, amp=0.2, rep=7):
     #sound = sound.astype(np.float) / 2**15
     delay = round(echo * fs)
     delayed_sig = np.concatenate((sound, np.zeros((delay * rep))))
@@ -40,10 +40,14 @@ directory = 'tidigits/disc_4.1.1/tidigits/train/man/nw'
 data = []
 
 for filename in os.listdir(directory):  # Stegar igenom mapp med data och skapar kopior på filer fast med rev / noise på
+    spkr = directory.split("/")[-2]
     f = os.path.join(directory, filename)
+
     if os.path.isfile(f):
         sample, smplrate = loadAudio(f)
+        utter = filename.strip(".wav")
         rev_samp = delay(sample, smplrate)
         noise_samp = sample + np.random.normal(0, 30, len(sample))
-        data += [(sample, smplrate), (rev_samp, smplrate), (noise_samp, smplrate)]
-#sample_rev = delay(voice_sig, echo, amp, 8, fs)
+        data += [[sample, smplrate, "{} {}".format(spkr, utter)], [rev_samp, smplrate, "{} rev {}".format(spkr, utter)],
+                 [noise_samp, smplrate, "{} noise {}".format(spkr, utter)]]
+
