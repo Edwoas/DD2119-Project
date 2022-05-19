@@ -9,6 +9,7 @@ import os
 import librosa
 import librosa.display
 import matplotlib.pyplot as plt
+from sklearn.model_selection import train_test_split
 
 
 # Bibliotek för att köra kod är lab3_tools, os och numpy
@@ -76,7 +77,7 @@ def create_augmented_training_data():
                 aug_list = ["rev", "noise", "babble", "normal"]
                 for i, u in zip(data_augments, aug_list): # för varje sample gör den nedanstående
                     mfcc = extract_lmfcc(i, samplingrate) # Denna tar ut MFCCs för alla samples, gör lab 1 i princip.
-                    
+
                     train_data.append({'filename': filename, 'utter': utter, 'aug_type': u, 'mfcc': mfcc,
                                        'samplingrate': samplingrate})   # gör en dictionary med filnamn, utterance,
                                                                         # vilken typ av data augmentation, mfcc och 
@@ -101,5 +102,6 @@ def extract_mfcc(sample, samplerate):
 
 x = create_augmented_training_data() # läser in datan
 
+
 # TODO: 
-# Skapa validation set, 10/90 
+# Skapa validation set, 10/90. Testa att suhfflea hela x och välj de sista 10% som validation och resterande som training.
